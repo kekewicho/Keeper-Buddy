@@ -1,0 +1,36 @@
+[
+    {
+        "name": "add_to_shopping_list",
+        "description": "Agrega un nuevo artículo a la lista de compras.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "article": {
+                    "type": "string",
+                    "description": "El artículo que se agregará a la lista de compras."
+                },
+                "payday": {
+                    "type": "string",
+                    "description": "Opcional. Especifica la quincena para agregar el artículo. Formato: 'AAAA-MM-#' donde # es 1 (día 15) o 2 (día 30). Si no se proporciona, se agrega a la siguiente quincena."
+                }
+            },
+            "required": [
+                "article"
+            ]
+        }
+    },
+    {
+        "name": "show_me_the_shopping_list",
+        "description": "Muestra los artículos en la lista de compras para una quincena específica o la quincena actual/siguiente.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "payday": {
+                    "type": "string",
+                    "description": "Opcional. Especifica la quincena de la que se desea ver la lista de compras. Formato: 'AAAA-MM-#' donde # es 1 (día 15) o 2 (día 30). Si no se proporciona, mostrará la lista de la próxima quincena por defecto."
+                }
+            },
+            "required": []
+        }
+    }
+]

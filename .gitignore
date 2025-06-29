@@ -1,0 +1,72 @@
+# Ignorar directorios de entornos virtuales
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ignorar archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+
+# Ignorar archivos de IPython/Jupyter
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# Ignorar archivos de registro (logs)
+*.log
+log/
+
+# Ignorar archivos de base de datos
+*.sqlite3
+*.db
+*.sqlite
+
+# Ignorar archivos específicos de sistemas operativos
+.DS_Store # macOS
+Thumbs.db # Windows
+ehthumbs.db # Windows
+Desktop.ini # Windows
+
+# Ignorar archivos de configuración sensibles
+# Es buena práctica no subir archivos que contengan credenciales o información sensible.
+# Puedes añadir aquí nombres de archivos como:
+# config.ini
+# settings.py
+.env
+
+# Ignorar archivos generados por herramientas de construcción/distribución
+dist/
+build/
+*.egg
+*.whl
+
+# Ignorar archivos de cobertura de código
+.coverage
+.coverage.*
+
+# Ignorar archivos de IDEs (Entornos de Desarrollo Integrado)
+.idea/ # PyCharm
+.vscode/ # VS Code
+*.iml # IntelliJ-based IDEs
+
+# Ignorar notebooks de Jupyter y archivos relacionados si no quieres versionarlos
+# *.ipynb
+
+# Ignorar archivos de tipo de datos para mypy
+.mypy_cache/
+
+# Ignorar artefactos de Docker
+Dockerfile.bak
+docker-compose.bak
+
+# Ignorar archivos temporales
+*~
+*.bak
+*.swp

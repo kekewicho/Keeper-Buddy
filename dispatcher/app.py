@@ -3,6 +3,8 @@ import requests
 from utils.prompt import build_user_message, prompt, build_function_response
 from dotenv import load_dotenv
 import os
+from model.message_model import Message
+from model.chat_model import Chat
 
 load_dotenv()
 
@@ -24,48 +26,56 @@ def webhook():
         return jsonify({"status": "success"}), 200
 
     message = data["data"]["message"]["conversation"]
-
+    json_message = build_user_message(message)
     
-    actual_chat = [build_user_message(message)]
+    actual_chat = Chat([Message(json_message)])
+
     actual_iteration = 0
 
     while actual_iteration < MAX_ITERATIONS:
 
-        role = actual_chat[-1]["role"]
-        _part_type = actual_chat[-1]["parts"][-1]
+        last_message = actual_chat[-1]
 
-        if role == "model" and _part_type == "text":
+        if last_message.role == "model" and last_message.is_text:
             break
 
 
         actual_iteration += 1
 
-        response = prompt(actual_chat)
+        response = Message(prompt(actual_chat.to_json())[-1])
 
-        actual_chat = response
 
-        part_type = response[-1]["parts"][-1]["part_type"]
-        content = response[-1]["parts"][-1]["content"]
+        actual_chat.append(response)
 
-        if part_type == "function_call":
-            name = content['name'].replace('.', '/')
+        if response.is_function_call:
+
+            function_call_data = response.function_call_data
+        
+            name = function_call_data["name"]
             keeper_host = os.getenv("KEEPER_SERVICE_HOST", "127.0.0.1")
             keeper_port = os.getenv("KEEPER_SERVICE_PORT", "8003")
             func_response = requests.post(
                 url=f"http://{keeper_host}:{keeper_port}/{name}",
-                json=content['args'],
+                json=function_call_data['args'],
                 headers={"Content-Type": "application/json"}
             ).json()
 
-            actual_chat.append(build_function_response(name, func_response))
+            response = Message(build_function_response(name, func_response))
+
+            actual_chat.append(response)
 
 
-    response_to_user = actual_chat[-1].get("parts")[-1].get("content").get("text")
+    response_to_user = actual_chat[-1].text_content
 
-    send_message(response_to_user, data["data"]["key"]["remoteJid"])
+    try:
+        send_message(response_to_user, data["data"]["key"]["remoteJid"])
     
 
-    return jsonify({"status": "success", "message": "Mensaje recibido"}), 200
+        return jsonify({"status": "success", "message": "Mensaje recibido"}), 200
+    
+    except Exception as e:
+
+        return jsonify({"status": "error", "message": actual_chat.to_json()}), 500
 
 
 def send_message(message, to):

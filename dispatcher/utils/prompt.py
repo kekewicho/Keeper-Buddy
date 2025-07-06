@@ -33,7 +33,7 @@ def build_function_response(name, response):
     return {
         "parts": [
             {
-                "functionResponse": {
+                "function_response": {
                     "name": name,
                     "response": response
                 }

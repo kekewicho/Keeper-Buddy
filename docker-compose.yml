@@ -38,6 +38,8 @@ services:
     restart: always
     env_file:
       - .env
+    volumes:
+      - ./LLM.config.json:/app/LLM.config.json
 
   keeper-service:
     build: ./keeper-service
@@ -60,6 +62,9 @@ services:
       - llm
       - keeper-service
       - evolution-api
+    volumes:
+      - ./LLM.config.json:/app/LLM.config.json
+
 
 volumes:
   postgres_data:

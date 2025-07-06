@@ -1,13 +1,13 @@
 import requests
 import os
+import json
 
 def prompt(chat):
     
-    llm_host = os.getenv("LLM_HOST", "127.0.0.1")
-    llm_port = os.getenv("LLM_PORT", "8001")
+    llm_url = os.getenv("LLM_URL", "http://127.0.0.1:8001")
     
     response = requests.post(
-        f"http://{llm_host}:{llm_port}/prompt",
+        f"{llm_url}/prompt",
         headers={"Content-Type": "application/json"},
         json=chat
     )
@@ -16,13 +16,15 @@ def prompt(chat):
 
 
 
-def build_user_message(message):
+def build_user_message(message: str, personalization_JID: str = None):
+
+    personalization_prompt = get_personalization_for_JID(personalization_JID) or ""
 
     return {
         "role": "user",
         "parts": [
             {
-                "text": message
+                "text": personalization_prompt + message
             }
         ]
     }
@@ -41,3 +43,28 @@ def build_function_response(name, response):
         ],
         "role": "user"
     }
+
+
+
+def get_personalization_for_JID(JID) -> list:
+    """
+    This function should retrieve the personalization data for a given JID.
+    For now, it returns None as a placeholder.
+    """
+
+    with open(os.getenv("LLM_CONFIG_PATH","LLM.config.json"), "r") as file:
+        
+        config_params = json.loads(file.read())
+
+        personalization = config_params.get("personalization")
+
+        if not personalization:
+            return None
+        
+
+        for config_jid, data in personalization.items():
+
+            
+            if config_jid in JID:
+                return '. '.join(data) + ". "
+        return None

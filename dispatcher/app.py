@@ -19,14 +19,9 @@ app = Flask(__name__)
 def webhook():
     data = request.json
 
-    isFromMe = data["data"]["key"]["fromMe"]
-
-    if not isFromMe: #(isFromMe or "4444929147" in str(data["data"]["key"]["remoteJid"])):
-
-        return jsonify({"status": "success"}), 200
-
     message = data["data"]["message"]["conversation"]
-    json_message = build_user_message(message)
+    jid = data["data"]["key"]["remoteJid"]
+    json_message = build_user_message(message, jid)
     
     actual_chat = Chat([Message(json_message)])
 
@@ -52,10 +47,9 @@ def webhook():
             function_call_data = response.function_call_data
         
             name = function_call_data["name"]
-            keeper_host = os.getenv("KEEPER_SERVICE_HOST", "127.0.0.1")
-            keeper_port = os.getenv("KEEPER_SERVICE_PORT", "8003")
+            keeper_service_url = os.getenv("KEEPER_SERVICE_URL", "http://127.0.0.1:8003")
             func_response = requests.post(
-                url=f"http://{keeper_host}:{keeper_port}/{name}",
+                url=f"{keeper_service_url}/{name}",
                 json=function_call_data['args'],
                 headers={"Content-Type": "application/json"}
             ).json()
@@ -79,12 +73,12 @@ def webhook():
 
 def send_message(message, to):
 
-    evolution_host = os.getenv("EVOLUTION_API_HOST", "127.0.0.1")
-    evolution_port = os.getenv("EVOLUTION_API_PORT", "8080")
+    evolution_url = os.getenv("EVOLUTION_API_URL", "http://127.0.0.1:8080")
+    evolution_instance = os.getenv("EVOLUTION_INSTANCE", "default")
 
     requests.request(
         "POST",
-        url = f"http://{evolution_host}:{evolution_port}/message/sendText/Test",
+        url = f"{evolution_url}/message/sendText/{evolution_instance}",
         json = {
             "number": "+" + to,
             "text": message,

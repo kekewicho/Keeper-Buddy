@@ -66,12 +66,11 @@ def webhook():
 
 
     response_to_user = actual_chat[-1].text_content
-
+    
     try:
         send_message(response_to_user, data["data"]["key"]["remoteJid"])
-    
 
-        return jsonify({"status": "success", "message": "Mensaje recibido"}), 200
+        return jsonify({"status": "success", "message": response_to_user}), 200
     
     except Exception as e:
 
@@ -93,7 +92,7 @@ def send_message(message, to):
         },
         headers = {
             "Content-Type": "application/json",
-            "apiKey": "123456.+az1"
+            "apiKey": os.getenv("AUTHENTICATION_API_KEY")
         }
     )
 

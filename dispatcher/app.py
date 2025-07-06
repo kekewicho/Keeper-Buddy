@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
 import requests
-from utils.prompt import build_user_message, prompt
-from controllers import FUNCTION_CALLS
+from utils.prompt import build_user_message, prompt, build_function_response
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 MAX_ITERATIONS = 5
 
@@ -15,7 +19,7 @@ def webhook():
 
     isFromMe = data["data"]["key"]["fromMe"]
 
-    if not (isFromMe or "4444929147" in str(data["data"]["key"]["remoteJid"])):
+    if not isFromMe: #(isFromMe or "4444929147" in str(data["data"]["key"]["remoteJid"])):
 
         return jsonify({"status": "success"}), 200
 
@@ -28,9 +32,9 @@ def webhook():
     while actual_iteration < MAX_ITERATIONS:
 
         role = actual_chat[-1]["role"]
-        _part_type = actual_chat[-1]["parts"][-1]["part_type"]
+        _part_type = actual_chat[-1]["parts"][-1]
 
-        if role == "model" and _part_type == "message":
+        if role == "model" and _part_type == "text":
             break
 
 
@@ -44,12 +48,16 @@ def webhook():
         content = response[-1]["parts"][-1]["content"]
 
         if part_type == "function_call":
+            name = content['name'].replace('.', '/')
+            keeper_host = os.getenv("KEEPER_SERVICE_HOST", "127.0.0.1")
+            keeper_port = os.getenv("KEEPER_SERVICE_PORT", "8003")
+            func_response = requests.post(
+                url=f"http://{keeper_host}:{keeper_port}/{name}",
+                json=content['args'],
+                headers={"Content-Type": "application/json"}
+            ).json()
 
-            func_response = FUNCTION_CALLS[content["name"]](**content["args"])
-
-            actual_chat.append(func_response)
-
-        print(actual_chat)
+            actual_chat.append(build_function_response(name, func_response))
 
 
     response_to_user = actual_chat[-1].get("parts")[-1].get("content").get("text")
@@ -62,10 +70,12 @@ def webhook():
 
 def send_message(message, to):
 
+    evolution_host = os.getenv("EVOLUTION_API_HOST", "127.0.0.1")
+    evolution_port = os.getenv("EVOLUTION_API_PORT", "8080")
 
     requests.request(
         "POST",
-        url = "http://127.0.0.1:8080/message/sendText/Test",
+        url = f"http://{evolution_host}:{evolution_port}/message/sendText/Test",
         json = {
             "number": "+" + to,
             "text": message,

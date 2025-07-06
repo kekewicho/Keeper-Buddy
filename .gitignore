@@ -70,3 +70,7 @@ docker-compose.bak
 *~
 *.bak
 *.swp
+
+
+
+keeper-service/key

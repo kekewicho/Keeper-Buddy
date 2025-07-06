@@ -1,9 +1,13 @@
 import requests
+import os
 
 def prompt(chat):
     
+    llm_host = os.getenv("LLM_HOST", "127.0.0.1")
+    llm_port = os.getenv("LLM_PORT", "8001")
+    
     response = requests.post(
-        "http://127.0.0.1:8001/prompt",
+        f"http://{llm_host}:{llm_port}/prompt",
         headers={"Content-Type": "application/json"},
         json=chat
     )
@@ -18,24 +22,21 @@ def build_user_message(message):
         "role": "user",
         "parts": [
             {
-                "content": {
-                    "text": message
-                },
-                "part_type": "message"
+                "text": message
             }
         ]
     }
 
 def build_function_response(name, response):
 
+
     return {
         "parts": [
             {
-                "content": {
+                "functionResponse": {
                     "name": name,
                     "response": response
-                },
-                "part_type": "function_response"
+                }
             }
         ],
         "role": "user"

@@ -1,6 +1,5 @@
 from flask import Flask, request
 from LLM import prompt
-from adapters import json_to_part, part_to_json
 
 
 
@@ -12,13 +11,9 @@ def understand_message():
     try:
         chat = request.get_json()
 
-        content = json_to_part(chat)
+        response = prompt(chat)
 
-        response = prompt(content)
-
-        parsed_response = part_to_json(response)
-
-        return parsed_response, 200
+        return response, 200
     
     except Exception as e:
         print(e)
@@ -28,4 +23,4 @@ def understand_message():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8001, host='0.0.0.0')
+    app.run(debug=True, port=8001)

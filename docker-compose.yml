@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:15
@@ -34,6 +32,34 @@ services:
       - redis
     volumes:
       - evolution_instances:/evolution/instances
+  llm:
+    build: ./llm
+    container_name: keeper_llm
+    restart: always
+    env_file:
+      - .env
+
+  keeper-service:
+    build: ./keeper-service
+    container_name: keeper_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - FIREBASE_SERVICE_ACCOUNT_KEY_PATH=/app/key/keeper-buddy-eac2edfeddc3.json
+
+  dispatcher:
+    build: ./dispatcher
+    container_name: keeper_dispatcher
+    restart: always
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    depends_on:
+      - llm
+      - keeper-service
+      - evolution-api
 
 volumes:
   postgres_data:

@@ -1,13 +1,13 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request
 from helpers.dates_helpers import next_paday_key
 from helpers.api_helper import db
 from itertools import groupby
 
 
-despensa = Blueprint("despensa", __name__, url_prefix="/despensa")
+despensa = Blueprint("despensa", __name__)
 
 
-@despensa.post("/add")
+@despensa.post("/addToShoppingList")
 def add_to_shopping_list():
 
     payload = request.get_json()
@@ -39,7 +39,7 @@ def add_to_shopping_list():
 
 
 
-@despensa.post("/shoppingList")
+@despensa.post("/getShoppingList")
 def show_me_the_shopping_list():
 
     payday = request.get_json().get("payday")

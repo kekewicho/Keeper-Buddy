@@ -1,6 +1,6 @@
 [
     {
-        "name": "despensa.add",
+        "name": "addToShoppingList",
         "description": "Agrega un nuevo artículo a la lista de compras.",
         "parameters": {
             "type": "object",
@@ -20,7 +20,7 @@
         }
     },
     {
-        "name": "despensa.shoppingList",
+        "name": "getShoppingList",
         "description": "Muestra los artículos en la lista de compras para una o varias quincenas.",
         "parameters": {
             "type": "object",

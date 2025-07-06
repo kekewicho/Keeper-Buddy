@@ -20,7 +20,7 @@ services:
       - "6379:6379"
 
   evolution-api:
-    container_name: evolution_api
+    container_name: evolution-api
     image: atendai/evolution-api:v2.1.1
     restart: always
     ports:
@@ -34,14 +34,14 @@ services:
       - evolution_instances:/evolution/instances
   llm:
     build: ./llm
-    container_name: keeper_llm
+    container_name: keeper-llm
     restart: always
     env_file:
       - .env
 
   keeper-service:
     build: ./keeper-service
-    container_name: keeper_service
+    container_name: keeper-service
     restart: always
     env_file:
       - .env
@@ -50,7 +50,7 @@ services:
 
   dispatcher:
     build: ./dispatcher
-    container_name: keeper_dispatcher
+    container_name: keeper-dispatcher
     restart: always
     ports:
       - "8002:8002"

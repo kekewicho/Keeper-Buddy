@@ -1,5 +1,6 @@
 import google.generativeai as genai 
-from google.generativeai import types 
+from google.generativeai import types
+from config import load_config
 import dotenv
 import os
 import json
@@ -11,13 +12,13 @@ genai.configure(api_key=os.getenv("GOOGLE_AI_API_KEY"))
 tasks_tools_definition = json.loads(open("tools.json", "r").read())
 tools = [types.Tool(function_declarations=tasks_tools_definition)]
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_PARAMS = load_config()
 
 
 def prompt(contents: list) -> list:
     try:
         model = genai.GenerativeModel(
-            MODEL_NAME
+            **MODEL_PARAMS,
         )
         
         response = model.generate_content(
@@ -43,3 +44,5 @@ def prompt(contents: list) -> list:
                 ]
             }
         ]
+    
+

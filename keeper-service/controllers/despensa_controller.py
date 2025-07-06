@@ -52,7 +52,6 @@ def show_me_the_shopping_list():
         
         payday = [payday]
 
-    print(payday)
 
     results = db.filter_documents("despensa", "payday", "in", payday)
 
